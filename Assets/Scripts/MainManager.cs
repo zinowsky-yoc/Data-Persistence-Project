@@ -11,17 +11,17 @@ public class MainManager : MonoBehaviour
     public Rigidbody Ball;
 
     public Text ScoreText;
+    public Text HighScoreText;
     public GameObject GameOverText;
     
     private bool m_Started = false;
     private int m_Points;
-    
     private bool m_GameOver = false;
 
-    
     // Start is called before the first frame update
     void Start()
     {
+        SetHighScoreText();
         const float step = 0.6f;
         int perLine = Mathf.FloorToInt(4.0f / step);
         
@@ -55,9 +55,10 @@ public class MainManager : MonoBehaviour
         }
         else if (m_GameOver)
         {
+
             if (Input.GetKeyDown(KeyCode.Space))
             {
-                SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+                SceneManager.LoadScene(0, LoadSceneMode.Single);
             }
         }
     }
@@ -70,7 +71,21 @@ public class MainManager : MonoBehaviour
 
     public void GameOver()
     {
+        if (m_Points > GameManager.Instance.SessionHighscore) {
+            GameManager.Instance.SessionHighscore = m_Points;
+        }
+
+        if (m_Points > GameManager.Instance.Highscore) {
+            GameManager.Instance.Highscore = m_Points;
+            GameManager.Instance.Recordholder = GameManager.Instance.Name;
+            GameManager.Instance.SaveHighscore();
+        }
+        
         m_GameOver = true;
         GameOverText.SetActive(true);
+    }
+
+    public void SetHighScoreText() {
+        HighScoreText.text = "Session Best: " + GameManager.Instance.Name + " : " + GameManager.Instance.SessionHighscore;
     }
 }
